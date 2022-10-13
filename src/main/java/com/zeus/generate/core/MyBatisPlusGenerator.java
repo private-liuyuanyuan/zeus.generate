@@ -34,17 +34,8 @@ public class MyBatisPlusGenerator implements InitializingBean {
     private String tablePrefix;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-//        String url = System.getProperty("url");
-//        String username = System.getProperty("username");
-//        String pswd = System.getProperty("pswd");
-//        String author = System.getProperty("author");
-//        String outputDir = System.getProperty("outputDir");
-//        String packageParent = System.getProperty("packageParent");
-//        String include = System.getProperty("include");
-//        String tablePrefix = System.getProperty("tablePrefix");
+    public void afterPropertiesSet() {
         // 数据源配置
-//        DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder("jdbc:mysql://10.20.12.20:3306/product_ams?characterEncoding=utf8&useSSL=false", "product_ams", "Cmp@v587").dbQuery(new MySqlQuery()).typeConvert(new MySqlTypeConvert()).keyWordsHandler(new MySqlKeyWordsHandler());
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(url, username, pswd).dbQuery(new MySqlQuery()).typeConvert(new MySqlTypeConvert()).keyWordsHandler(new MySqlKeyWordsHandler());
 
         FastAutoGenerator.create(dataSourceConfig).globalConfig(builder -> {
