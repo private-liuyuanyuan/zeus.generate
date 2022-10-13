@@ -1,0 +1,54 @@
+server:
+  port: '18080'
+spring:
+  application:
+    name: zeus
+  datasource:
+    druid:
+      dialect: mysql
+      url: jdbc:mysql://10.20.12.20:3306/product_ams?characterEncoding=utf8&useSSL=false
+      username: product_ams
+      password: Gy2VghUgWHszx8gLFT4etT9ZVOukJi73KoG1q3Oz/DAz5h2mFVVunjcyaaKT9tMPsBgoWBFRmrYbhgqJqT/Q8A==
+      initialSize: '2'
+      maxActive: '30'
+      minIdle: '2'
+      maxWait: '60000'
+      poolPreparedStatements: 'true'
+      maxOpenPreparedStatements: '20'
+      maxPoolPreparedStatementPerConnectionSize: '20'
+      validationQuery: select 1
+      validationQueryTimeout: '1'
+      testOnBorrow: 'true'
+      testOnReturn: 'true'
+      testWhileIdle: 'true'
+      remove-abandoned: 'true'
+      remove-abandoned-timeout: '60'
+      log-abandoned: 'true'
+      timeBetweenEvictionRunsMillis: '10000'
+      minEvictableIdleTimeMillis: '30001'
+      asyncCloseConnectionEnable: 'true'
+      filters:  config,stat,wall,log4j
+      publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJfVJOpXYGy8aBCk3zEoKKQDTVCCvJwhhithfY/I5PUvzFBAYygunmuCtUhzPUZ+1RJQds0Q4fu07m5mr5kv5ocCAwEAAQ==
+      connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJfVJOpXYGy8aBCk3zEoKKQDTVCCvJwhhithfY/I5PUvzFBAYygunmuCtUhzPUZ+1RJQds0Q4fu07m5mr5kv5ocCAwEAAQ==;druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      use-global-data-source-stat: 'true'
+  banner:
+    charset: UTF-8
+  freemarker:
+    checkTemplateLocation: 'false'
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 20MB
+  main:
+    allow-circular-references: true
+logging:
+  config: classpath:logback-spring.xml
+  dir: /log/services
+  level:
+    root: info
+    com:
+      bocloud: info
+  file:
+    max-size: 100MB
+    max-history: '30'
+    total-size-cap: 2GB

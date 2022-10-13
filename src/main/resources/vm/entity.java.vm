@@ -1,0 +1,48 @@
+package ${package.Entity};
+
+import java.util.Date;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.megatron.entity.annotations.Column;
+import com.megatron.entity.annotations.IgnoreAll;
+import com.megatron.entity.annotations.PK;
+import com.megatron.entity.annotations.Table;
+import com.megatron.entity.bean.GenericEntity;
+import com.megatron.entity.meta.PKStrategy;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import jdk.nashorn.internal.objects.annotations.Getter;
+import jdk.nashorn.internal.objects.annotations.Setter;
+
+
+import lombok.Data;
+
+/**
+ * @Author ${author}
+ * @Date ${date}
+ * @Description:$!{table.comment}
+ */
+@Data
+@Table("$!{table.name}")
+public class ${entity} extends GenericEntity {
+
+    #foreach($field in ${table.fields})
+    #if(${field.name}=="id")
+    /**
+     * id
+     *
+     */
+    @PK(value = PKStrategy.AUTO)
+    private ${field.propertyType} ${field.propertyName};
+    #elseif(${field.name}!="name" || ${field.name}!="gmt_create" || ${field.name}!="gmt_modify" || ${field.name}!="creator_id"|| ${field.name}!="owner_id" || ${field.name}!="mender_id" || ${field.name}!="status" || ${field.name}!="is_deleted" || ${field.name}!="props" || ${field.name}!="remark")
+    /**
+     * ${field.comment}
+     *
+     */
+    @Column("${field.name}")
+    private ${field.propertyType} ${field.propertyName};
+    #end
+
+    #end
+}

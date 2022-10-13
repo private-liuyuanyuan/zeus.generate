@@ -1,0 +1,136 @@
+package ${package.ServiceImpl};
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import ${package.Entity}.${entity};
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import com.google.common.collect.Maps;
+import com.megatron.framework.lock.AutoCloseLock;
+import org.apache.commons.beanutils.locale.LocaleBeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import com.megatron.common.utils.GridHelper;
+import com.megatron.common.model.GeneralResult;
+import com.megatron.common.model.GridBean;
+import com.megatron.common.model.Pager;
+import com.megatron.common.model.SimpleBean;
+import com.megatron.common.utils.Common;
+
+import com.megatron.framework.lock.LockFactory;
+
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @Author ${author}
+ * @Date ${date}
+ * @Description:$!{table.comment}
+ */
+@Slf4j
+@Service("${entity}Service")
+public class ${entity}ServiceImpl extends ${table.serviceName} {
+    @Autowired
+    private LockFactory lockFactory;
+    @Autowired
+    private ${entity}Repository ${table.entityPath}Repository;
+
+    @Override
+    public GeneralResult<GridBean<${entity}>> list(Pager pager) {
+        GridBean gridBean;
+        try {
+            if (null == pager.getParams()) {
+                pager.setParams(new ArrayList<>());
+            }
+            if (null == pager.getSorter()) {
+                pager.setSorter(Maps.newHashMap());
+            }
+            pager.getSorter().put("gmtCreate", Common.ONE);
+            int total = this.${table.entityPath}Repository.count(pager.getParams());
+            if (pager.getSimple()) {
+                List<SimpleBean> beans = this.${table.entityPath}Repository.list(pager.getParams(), pager.getSorter());
+                gridBean = new GridBean<>(1, 1, total, beans);
+            } else {
+                List<${entity}> list = this.${table.entityPath}Repository.list(pager.getPage(), pager.getRows(),
+                        pager.getParams(), pager.getSorter());
+                gridBean = GridHelper.getBean(pager.getPage(), pager.getRows(), total, list);
+            }
+            return new GeneralResult<GridBean<CollectionTask>>(true, gridBean, "查询成功");
+        } catch (Exception e) {
+            log.error("List Query Is Fail:", e);
+            return new GeneralResult<>(false, "查询失败");
+        }
+    }
+
+    @Override
+    public GeneralResult create(${entity} param, Long userId) {
+        try {
+            BocloudResult<${entity}> result = exists(param.getName());
+            if (result.isSuccess()) {
+                return new BocloudResult<>(false, "该名称已存在");
+            }
+            params.setCreatorId(userId);
+            params.setMenderId(userId);
+            ${table.entityPath}Repository.save(param);
+            return new GeneralResult<>(true, "创建成功");
+        } catch (Exception e) {
+            log.error("Creation failed:", e);
+            return new GeneralResult<>(false, "创建失败");
+        }
+    }
+
+    @Override
+    public GeneralResult modify(${entity} param, Long userId) {
+        String path = ${entity}ServiceImpl.class.getSimpleName() + "_" + param.getId();
+        try (AutoCloseLock lock = lockFactory.getACLock(path)) {
+            Assert.isTrue(lock.acquire(10, TimeUnit.SECONDS), "请求超时");
+            ${entity} ${table.entityPath} = ${table.entityPath}Repository.query(relation.getId());
+            if (null == ${table.entityPath}) {
+                return new GeneralResult<>(false, "数据不存在");
+            }
+            LocaleBeanUtils.copyProperties(${table.entityPath}, param);
+            ${table.entityPath}.setGmtModify(new Date());
+            ${table.entityPath}.setMenderId(userId);
+            ${table.entityPath}Repository.update(${table.entityPath});
+            return new GeneralResult<>(true, "修改成功");
+        } catch (Exception e) {
+            log.error("Update failed:", e);
+            return new GeneralResult<>(false, "修改失败");
+        }
+    }
+
+    @Override
+    public GeneralResult remove(Long id, Long userId) {
+        String path = ${entity}ServiceImpl.class.getSimpleName() + "_" + param.getId();
+        try (AutoCloseLock lock = lockFactory.getACLock(path)) {
+            Assert.isTrue(lock.acquire(10, TimeUnit.SECONDS), "请求超时");
+            ${entity} ${table.entityPath} = ${table.entityPath}Repository.query(relation.getId());
+            if (null == ${table.entityPath}) {
+                return new GeneralResult<>(false, "数据不存在");
+            }
+            ${table.entityPath}Repository.delete(id, userId);
+            return new GeneralResult<>(true, "删除成功");
+        } catch (Exception e) {
+            log.error("Delete failed:", e);
+            return new GeneralResult<>(false, "删除失败");
+        }
+    }
+
+    @Override
+    public GeneralResult<${entity}> detail(Long id) {
+        try {
+            ${entity} ${table.entityPath} = ${table.entityPath}Repository.query(id);
+            if (null == ${table.entityPath}) {
+                return new GeneralResult<>(false, "数据不存在");
+            }
+            return new GeneralResult<>(true, ${table.entityPath}, "查询成功");
+        } catch (Exception e) {
+            log.error("Details query failed:", e);
+            return new GeneralResult<>(false, "查询失败");
+        }
+    }
+}

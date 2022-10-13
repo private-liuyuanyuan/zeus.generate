@@ -1,0 +1,66 @@
+package ${package.Mapper};
+
+import ${package.Entity}.${entity};
+import com.megatron.common.model.Pager;
+import com.megatron.common.model.Param;
+import com.megatron.common.model.SimpleBean;
+import com.megatron.common.utils.Common;
+import com.megatron.common.utils.MapTools;
+import com.megatron.database.core.intf.impl.BasicGenericDao;
+import com.megatron.database.utils.QueryBuilder;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+/**
+ * @Author ${author}
+ * @Date ${date}
+ * @Description:$!{table.comment}
+ */
+@Repository
+public class ${entity}Repository extends BasicGenericDao<${entity}, Long> {
+
+    public RelationCategoryRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate npJdbcTemplate) {
+        super(jdbcTemplate, npJdbcTemplate);
+    }
+
+    public List<${entity}> list(int page, int rows, List<Param> params, Map<String, String> sorter) throws Exception {
+        String sql = "select a.* from $!{table.name} a where 1=1 and is_deleted=0 ";
+        sql = QueryBuilder.buildRaw(sql, new Pager(page, rows, params, sorter), "a");
+        Map<String, Object> paramMap = QueryBuilder.getParam(params);
+        return this.list(${entity}.class, sql, paramMap);
+    }
+
+    public List<SimpleBean> list(List<Param> params, Map<String, String> sorter) throws Exception {
+        String sql = "select a.id,a.name from $!{table.name} a where 1=1 and a.is_deleted=0 ";
+        sql = QueryBuilder.buildRaw(sql, new Pager(1, Integer.MAX_VALUE, params, sorter), "a");
+        Map<String, Object> paramMap = QueryBuilder.getParam(params);
+        List<${entity}> list = this.list(${entity}.class, sql, paramMap);
+        List<SimpleBean> beans = new ArrayList<>();
+        for (${entity} ${table.entityPath} : list) {
+            beans.add(new SimpleBean(${table.entityPath}.getId(), ${table.entityPath}.getName()));
+        }
+        return beans;
+    }
+
+    public int count(List<Param> params) throws Exception {
+        String sql = "select count(1) from $!{table.name} a where 1=1 and a.is_deleted=0 ";
+        sql = QueryBuilder.buildRaw(sql, params, null, "a");
+        Map<String, Object> param = QueryBuilder.getParam(params);
+        return this.countQuery(sql, param).intValue();
+    }
+
+    public ${entity} query(Long id) throws Exception {
+        String sql = "select * from $!{table.name} where id = :id and is_deleted = 0";
+        Map<String, Object> params = MapTools.simpleMap(Common.ID, id);
+        List<${entity}> list = this.list(${entity}.class, sql, params);
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
+    }
+
+}

@@ -1,0 +1,25 @@
+package ${package.Service};
+
+import com.megatron.common.model.GeneralResult;
+import com.megatron.common.model.Pager;
+import com.megatron.common.model.RequestContext;
+
+import ${package.Entity}.${entity};
+
+/**
+ * @Author ${author}
+ * @Date ${date}
+ * @Description:$!{table.comment}
+ */
+public interface ${table.serviceName} {
+
+    GeneralResult<GridBean<${entity}>> list(Pager pager);
+
+    GeneralResult<${entity}> save(${entity} param, RequestContext context);
+
+    GeneralResult<${entity}> modify(${entity} param, RequestContext context);
+
+    GeneralResult<${entity}> detail(Long id);
+
+    GeneralResult<Void> remove(Long id, Long target);
+}

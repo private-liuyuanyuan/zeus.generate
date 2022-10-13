@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- 读取application.properties中的配置 -->
+	<springProperty scope="context" name="logging.dir" source="logging.dir"/>
+	<springProperty scope="context" name="logging.file.total-size-cap" source="logging.file.total-size-cap"/>
+	<springProperty scope="context" name="logging.file.max-size" source="logging.file.max-size"/>
+	<springProperty scope="context" name="logging.file.max-history" source="logging.file.max-history"/>
+	<springProperty scope="context" name="logging.level.com.bocloud" source="logging.level.com.bocloud"/>
+	<springProperty scope="context" name="logging.level.root" source="logging.level.root"/>
+
+	<property name="log_pattern"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] [%X{REQUEST_ID}] %cyan(%logger{32}):%L - %msg%n">
+    </property>
+
+	<!-- 默认的控制台日志输出，一般生产环境都是后台启动，这个没太大作用 -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>${log_pattern}</pattern>
+		</layout>
+	</appender>
+
+	<!-- 配置文件轮转 -->
+	<appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${logging.dir}/${service.name}.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${logging.dir}/history/${service.name}.%d{yyyy-MM-dd}.%i.log.gz
+			</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${logging.file.max-size}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<MaxHistory>${logging.file.max-history}</MaxHistory>
+			<totalSizeCap>${logging.file.total-size-cap}</totalSizeCap>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>${log_pattern}</pattern>
+		</layout>
+	</appender>
+
+	<root level="${logging.level.root}">
+		<appender-ref ref="CONSOLE"/>
+		<appender-ref ref="LOG_FILE"/>
+	</root>
+
+	<logger name="com.bocloud" level="${logging.level.com.bocloud}" additivity="false">
+		<appender-ref ref="CONSOLE"/>
+		<appender-ref ref="LOG_FILE"/>
+	</logger>
+	
+	<logger name="com.alibaba.druid.pool.DruidAbstractDataSource" level="error" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOG_FILE"/>
+    </logger>
+</configuration>

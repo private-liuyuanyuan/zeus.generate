@@ -1,0 +1,98 @@
+package ${package.Controller};
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import com.megatron.common.model.GeneralResult;
+import com.megatron.common.model.Pager;
+import com.megatron.common.model.RequestContext;
+import com.megatron.common.utils.Common;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+import ${package.Service}.${table.serviceName};
+import ${package.Entity}.${entity};
+
+
+/**
+ * @Author ${author}
+ * @Date ${date}
+ * @Description:$!{table.comment}
+ */
+@RestController
+@RequestMapping("/v1/")
+@Api(value = "", tags = {""})
+public class ${table.controllerName} {
+
+    @Autowired
+    private ${table.serviceName} ${table.entityPath}Service;
+
+    /**
+     * 列表查询
+     *
+     * @param pager
+     * @return
+     */
+    @ApiOperation(tags = {"CMC"}, value = "列表查询", httpMethod = "GET")
+    @GetMapping
+    public GeneralResult<GridBean<${entity}>> list(Pager pager) {
+        return ${table.entityPath}Service.list(pager);
+    }
+
+    /**
+     * 创建
+     *
+     * @param param
+     * @param context
+     * @return
+     */
+    @PostMapping
+    @ApiOperation(tags = {"CMC"}, value = "创建", response = GeneralResult.class, httpMethod = "POST",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public GeneralResult<${entity}> create(@RequestBody ${entity} param, @Value(Common.REQ_CONTEXT) RequestContext context) {
+        return ${table.entityPath}Service.save(param, context);
+    }
+
+    /**
+     * 修改
+     *
+     * @param param
+     * @param context
+     * @return
+     */
+    @PutMapping(value = "/{id}")
+    @ApiOperation(tags = {"CMC"}, value = "修改", response = GeneralResult.class, httpMethod = "PUT",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public GeneralResult<${entity}> modify(@RequestBody ${entity} param, @Value(Common.REQ_CONTEXT) RequestContext context) {
+        return ${table.entityPath}Service.modify(param, context);
+    }
+
+    /**
+     * 删除
+     *
+     * @param id
+     * @param context
+     * @return
+     */
+    @DeleteMapping(value = "/{id}")
+    @ApiOperation(tags = {"CMC", "CSC"}, value = "删除", response = GeneralResult.class, httpMethod = "DELETE",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public GeneralResult<Void> remove(@PathVariable(value = Common.ID) Long id, @Value(Common.REQ_CONTEXT) RequestContext context) {
+        return ${table.entityPath}Service.remove(id, context.getTarget());
+    }
+
+    /**
+     * 详情
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/{id}")
+    @ApiOperation(tags = {"CMC", "CSC"}, value = "详情")
+    public GeneralResult<${entity}> detail(@PathVariable(value = Common.ID) Long id) {
+        return ${table.entityPath}Service.detail(id);
+    }
+
+}
